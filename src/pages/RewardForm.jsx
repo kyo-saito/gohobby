@@ -1,10 +1,49 @@
 import { useState, useEffect } from 'react'
 import { useGoal } from '../context/GoalContext'
 
-function RewardForm({ setCurrentPage }) {
+const GIFT_OPTIONS = [
+  {
+    id: 'ice-cream',
+    title: 'アイス',
+    benefit: 'トッピング無料',
+    description: '通常よりお得',
+    icon: '🍦',
+  },
+  {
+    id: 'manga',
+    title: '漫画',
+    benefit: '1巻無料',
+    description: '通常よりお得',
+    icon: '📚',
+  },
+  {
+    id: 'ramen',
+    title: 'ラーメン',
+    benefit: 'トッピング無料',
+    description: '通常よりお得',
+    icon: '🍜',
+  },
+  {
+    id: 'cafe',
+    title: 'カフェ',
+    benefit: 'サイズアップ無料',
+    description: '通常よりお得',
+    icon: '☕',
+  },
+  {
+    id: 'movie',
+    title: '映画',
+    benefit: 'ポップコーン無料',
+    description: '通常よりお得',
+    icon: '🎬',
+  },
+]
+
+function RewardForm({ setCurrentPage, mode = 'custom' }) {
   const { state, dispatch } = useGoal()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [selectedGift, setSelectedGift] = useState(null)
 
   // selectedGoalIdから目標を取得
   const goalId = state.selectedGoalId
@@ -13,20 +52,30 @@ function RewardForm({ setCurrentPage }) {
   useEffect(() => {
     if (!goalId && state.goals.length === 0) {
       // 目標がない場合は目標登録画面に戻る
-      setCurrentPage('goal-form')
+      setCurrentPage('goal-form-mode')
     }
   }, [goalId, state.goals.length, setCurrentPage])
 
+  const handleGiftSelect = (gift) => {
+    setSelectedGift(gift)
+    setTitle(`${gift.title}: ${gift.benefit}`)
+    setDescription(`🎁 特典：${gift.benefit}（${gift.description}）`)
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!title.trim()) {
+    if (mode === 'select' && !selectedGift) {
+      alert('ギフトを選択してください')
+      return
+    }
+    if (mode === 'custom' && !title.trim()) {
       alert('リワード名を入力してください')
       return
     }
 
     if (!goalId) {
       alert('目標が見つかりません。最初からやり直してください。')
-      setCurrentPage('goal-form')
+      setCurrentPage('goal-form-mode')
       return
     }
 
@@ -45,15 +94,16 @@ function RewardForm({ setCurrentPage }) {
     // フォームをリセット
     setTitle('')
     setDescription('')
+    setSelectedGift(null)
   }
 
   if (!latestGoal) {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto pb-20">
         <div className="bg-white rounded-lg shadow-md p-8 text-center">
           <p className="text-gray-500 mb-4">目標が見つかりません</p>
           <button
-            onClick={() => setCurrentPage('goal-form')}
+            onClick={() => setCurrentPage('goal-form-mode')}
             className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors"
           >
             目標を登録する
@@ -64,7 +114,7 @@ function RewardForm({ setCurrentPage }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto pb-20">
       <div className="bg-white rounded-lg shadow-md p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -78,40 +128,81 @@ function RewardForm({ setCurrentPage }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="reward-title"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              リワード名 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              id="reward-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="例: 好きなレストランでディナー"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              required
-            />
-          </div>
+          {mode === 'select' ? (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                ギフトを選択 <span className="text-red-500">*</span>
+              </label>
+              <div className="space-y-3">
+                {GIFT_OPTIONS.map((gift) => (
+                  <button
+                    key={gift.id}
+                    type="button"
+                    onClick={() => handleGiftSelect(gift)}
+                    className={`w-full p-4 border-2 rounded-lg text-left transition-colors ${
+                      selectedGift?.id === gift.id
+                        ? 'border-secondary-500 bg-secondary-50'
+                        : 'border-gray-200 bg-white hover:border-secondary-300 hover:bg-secondary-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">{gift.icon}</span>
+                        <div>
+                          <div className="font-semibold text-gray-800">
+                            {gift.title}
+                          </div>
+                          <div className="text-sm text-secondary-600 font-medium">
+                            🎁 特典：{gift.benefit}（{gift.description}）
+                          </div>
+                        </div>
+                      </div>
+                      {selectedGift?.id === gift.id && (
+                        <span className="text-secondary-600 text-xl">✓</span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div>
+                <label
+                  htmlFor="reward-title"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  リワード名 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="reward-title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="例: 好きなレストランでディナー"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  required
+                />
+              </div>
 
-          <div>
-            <label
-              htmlFor="reward-description"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              説明（任意）
-            </label>
-            <textarea
-              id="reward-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="リワードの詳細を記入してください"
-              rows="4"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
+              <div>
+                <label
+                  htmlFor="reward-description"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  説明（任意）
+                </label>
+                <textarea
+                  id="reward-description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="リワードの詳細を記入してください"
+                  rows="4"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+            </>
+          )}
 
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-600">

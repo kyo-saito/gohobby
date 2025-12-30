@@ -11,7 +11,7 @@ function Home({ setCurrentPage }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto pb-20">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-800 mb-2">
           目標達成とリワードシステム
@@ -25,7 +25,7 @@ function Home({ setCurrentPage }) {
         <div className="bg-white rounded-lg shadow-md p-8 text-center">
           <p className="text-gray-500 mb-4">まだ目標が登録されていません</p>
           <button
-            onClick={() => setCurrentPage('goal-form')}
+            onClick={() => setCurrentPage('goal-form-mode')}
             className="bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
           >
             最初の目標を登録する
