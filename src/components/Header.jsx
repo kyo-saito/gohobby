@@ -33,7 +33,7 @@ function Header({ currentPage, setCurrentPage }) {
             ) : (
               <span className="text-5xl">🎯</span>
             )}
-            <span className="hidden sm:inline">GoHobby</span>
+            <span>GoHobby</span>
           </h1>
 
           {/* ハンバーガーメニューボタン */}
