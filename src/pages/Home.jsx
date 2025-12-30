@@ -10,34 +10,95 @@ function Home({ setCurrentPage }) {
     setCurrentPage('goal-detail')
   }
 
+  // 最近追加した目標を取得（作成日時の降順）
+  const recentGoals = [...state.goals]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5)
+
   return (
     <div className="max-w-4xl mx-auto pb-20">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-800 mb-2">
-          目標達成とリワードシステム
+          努力に、ご褒美を。
         </h2>
         <p className="text-gray-600">
-          日々の努力にすぐに報酬を。ストレスを報酬に変えましょう。
+          目標を決めて達成したら、自分にリワード。毎日のストレスを達成感に変えよう。
         </p>
       </div>
 
-      {activeGoals.length === 0 && completedGoals.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <p className="text-gray-500 mb-4">まだ目標が登録されていません</p>
-          <button
-            onClick={() => setCurrentPage('goal-form-mode')}
-            className="bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-          >
-            最初の目標を登録する
-          </button>
-        </div>
+      {/* 常設: 新しい目標を追加ボタン */}
+      <div className="mb-8">
+        <button
+          onClick={() => setCurrentPage('goal-form-mode')}
+          className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+        >
+          <span className="text-xl">＋</span>
+          <span>新しい目標を追加</span>
+        </button>
+      </div>
+
+      {/* 最近追加した目標一覧 */}
+      {recentGoals.length > 0 ? (
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            最近追加した目標
+          </h3>
+          <div className="space-y-3">
+            {recentGoals.map((goal) => {
+              const reward = state.rewards.find((r) => r.goalId === goal.id)
+              return (
+                <div
+                  key={goal.id}
+                  onClick={() => handleGoalClick(goal.id)}
+                  className={`bg-white rounded-xl p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-l-4 ${
+                    goal.status === 'completed'
+                      ? 'border-secondary-400 opacity-90'
+                      : 'border-primary-500'
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold text-gray-800 mb-1">
+                        {goal.title}
+                      </h4>
+                      {goal.description && (
+                        <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                          {goal.description}
+                        </p>
+                      )}
+                      {reward && (
+                        <p className="text-sm text-secondary-600 font-medium">
+                          🎁 {reward.title}
+                        </p>
+                      )}
+                    </div>
+                    <span
+                      className={`text-xs font-semibold px-2.5 py-1 rounded-full ml-2 ${
+                        goal.status === 'completed'
+                          ? 'bg-secondary-50 text-secondary-600'
+                          : 'bg-primary-50 text-primary-600'
+                      }`}
+                    >
+                      {goal.status === 'completed' ? '✓ 達成済み' : '進行中'}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </section>
       ) : (
-        <>
-          {activeGoals.length > 0 && (
-            <section className="mb-8">
-              <h3 className="text-xl font-semibold text-gray-700 mb-4">
-                アクティブな目標
-              </h3>
+        <div className="bg-white rounded-lg shadow-md p-8 text-center mb-8">
+          <p className="text-gray-500">まだ目標が登録されていません</p>
+        </div>
+      )}
+
+      {/* アクティブな目標（従来の表示も残す） */}
+      {activeGoals.length > 0 && (
+        <section className="mb-8">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            アクティブな目標
+          </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 {activeGoals.map((goal) => {
                   const reward = state.rewards.find(
@@ -124,8 +185,6 @@ function Home({ setCurrentPage }) {
               </div>
             </section>
           )}
-        </>
-      )}
     </div>
   )
 }

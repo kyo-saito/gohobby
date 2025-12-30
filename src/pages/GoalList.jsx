@@ -43,9 +43,9 @@ function GoalList({ setCurrentPage }) {
               <div
                 key={goal.id}
                 onClick={() => handleGoalClick(goal.id)}
-                className={`bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow border-l-4 ${
+                className={`bg-white rounded-xl p-5 cursor-pointer hover:shadow-md transition-all duration-200 border-l-4 ${
                   goal.status === 'completed'
-                    ? 'border-secondary-500 opacity-75'
+                    ? 'border-secondary-400 opacity-90'
                     : 'border-primary-500'
                 }`}
               >
@@ -54,13 +54,13 @@ function GoalList({ setCurrentPage }) {
                     {goal.title}
                   </h3>
                   <span
-                    className={`text-xs font-semibold px-2 py-1 rounded ${
+                    className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                       goal.status === 'completed'
-                        ? 'bg-secondary-100 text-secondary-700'
-                        : 'bg-primary-100 text-primary-700'
+                        ? 'bg-secondary-50 text-secondary-600'
+                        : 'bg-primary-50 text-primary-600'
                     }`}
                   >
-                    {goal.status === 'completed' ? '達成済み' : 'アクティブ'}
+                    {goal.status === 'completed' ? '✓ 達成済み' : '進行中'}
                   </span>
                 </div>
                 {goal.description && (

@@ -1,9 +1,11 @@
 function Footer() {
   // Viteの環境変数からバージョンを取得（vite.config.jsで注入）
-  const version = import.meta.env.VITE_APP_VERSION || '1.1.1'
+  // ビルド時にpackage.jsonから読み込まれる
+  // 開発サーバー起動時に毎回最新のpackage.jsonから読み込まれる
+  const version = import.meta.env.VITE_APP_VERSION || '1.1.5'
 
   return (
-    <footer className="fixed bottom-16 left-0 right-0 bg-gray-50 border-t border-gray-200 py-1.5 z-40">
+    <footer className="fixed bottom-14 left-0 right-0 bg-gray-50/80 backdrop-blur-sm border-t border-gray-100 py-1.5 z-40">
       <div className="container mx-auto px-4">
         <div className="flex justify-center items-center">
           <p className="text-xs text-gray-400">

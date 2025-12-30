@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useGoal } from '../context/GoalContext'
+import Toast from '../components/Toast'
 
 const GOAL_TEMPLATES = [
   '運動する',
@@ -19,6 +20,8 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState('')
+  const [toast, setToast] = useState(null)
+  const [titleError, setTitleError] = useState('')
 
   useEffect(() => {
     // URLパラメータやstateからmodeを取得する場合はここで処理
@@ -27,14 +30,16 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
   const handleTemplateSelect = (template) => {
     setSelectedTemplate(template)
     setTitle(template)
+    setTitleError('')
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!title.trim()) {
-      alert('目標名を入力してください')
+      setTitleError('目標名を入力してください')
       return
     }
+    setTitleError('')
 
     // 目標を追加（ADD_GOALアクションでselectedGoalIdも自動設定される）
     dispatch({
@@ -56,7 +61,7 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
 
   return (
     <div className="max-w-2xl mx-auto pb-20">
-      <div className="bg-white rounded-lg shadow-md p-8">
+      <div className="bg-white rounded-xl p-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           新しい目標を登録
         </h2>
@@ -72,7 +77,7 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
                     key={template}
                     type="button"
                     onClick={() => handleTemplateSelect(template)}
-                    className={`px-4 py-3 border-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-4 py-3 border-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                       selectedTemplate === template
                         ? 'border-primary-500 bg-primary-50 text-primary-700'
                         : 'border-gray-200 bg-white text-gray-700 hover:border-primary-300 hover:bg-primary-50'
@@ -95,7 +100,7 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="目標の詳細や背景を記入してください"
                   rows="3"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-300 transition-colors"
                 />
               </div>
             </div>
@@ -112,11 +117,19 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
                   type="text"
                   id="title"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setTitle(e.target.value)
+                    setTitleError('')
+                  }}
                   placeholder="例: 今週のプレゼン資料を完成させる"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    titleError ? 'border-red-300' : 'border-gray-300'
+                  }`}
                   required
                 />
+                {titleError && (
+                  <p className="mt-1 text-sm text-red-600">{titleError}</p>
+                )}
               </div>
 
               <div>
@@ -132,7 +145,7 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="目標の詳細や背景を記入してください"
                   rows="4"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-300 transition-colors"
                 />
               </div>
             </>
@@ -155,6 +168,13 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
           </div>
         </form>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   )
 }

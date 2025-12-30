@@ -21,4 +21,5 @@ packageJson.version = newVersion
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n')
 
 console.log(`バージョンを更新しました: ${currentVersion} → ${newVersion}`)
+console.log('注意: 開発サーバーを再起動すると、新しいバージョンが反映されます。')
 

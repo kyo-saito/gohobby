@@ -1,13 +1,16 @@
 import { useState } from 'react'
+import Header from './components/Header'
 import BottomTabNav from './components/BottomTabNav'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import GoalList from './pages/GoalList'
+import RewardList from './pages/RewardList'
 import GoalFormMode from './pages/GoalFormMode'
 import GoalForm from './pages/GoalForm'
 import RewardFormMode from './pages/RewardFormMode'
 import RewardForm from './pages/RewardForm'
 import GoalDetail from './pages/GoalDetail'
+import GoalEdit from './pages/GoalEdit'
 import { GoalProvider } from './context/GoalContext'
 
 function App() {
@@ -22,7 +25,7 @@ function App() {
       case 'goals':
         return <GoalList setCurrentPage={setCurrentPage} />
       case 'rewards':
-        return <div className="pb-20 p-4 text-center text-gray-600">リワード一覧（今後実装予定）</div>
+        return <RewardList setCurrentPage={setCurrentPage} />
       case 'goal-form-mode':
         return (
           <GoalFormMode
@@ -53,35 +56,26 @@ function App() {
         )
       case 'goal-detail':
         return <GoalDetail setCurrentPage={setCurrentPage} />
+      case 'goal-edit':
+        return <GoalEdit setCurrentPage={setCurrentPage} />
       default:
         return <Home setCurrentPage={setCurrentPage} />
     }
   }
 
-  // タブナビゲーションを表示しないページ
-  const hideTabNavPages = [
-    'goal-form-mode',
-    'goal-form',
-    'reward-form-mode',
-    'reward-form',
-    'goal-detail',
-  ]
-
   return (
     <GoalProvider>
       <div className="min-h-screen bg-gray-50 pb-20">
+        <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
         <main className="container mx-auto px-4 py-4">
           {renderPage()}
         </main>
-        {!hideTabNavPages.includes(currentPage) && (
-          <>
-            <Footer />
-            <BottomTabNav
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-          </>
-        )}
+        {/* フッタータブは全画面で常時表示 */}
+        <Footer />
+        <BottomTabNav
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
     </GoalProvider>
   )

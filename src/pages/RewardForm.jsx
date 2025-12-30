@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGoal } from '../context/GoalContext'
+import Toast from '../components/Toast'
+import Announcement from './Announcement'
 
 const GIFT_OPTIONS = [
   {
@@ -44,6 +46,9 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [selectedGift, setSelectedGift] = useState(null)
+  const [toast, setToast] = useState(null)
+  const [showAnnouncement, setShowAnnouncement] = useState(false)
+  const [errors, setErrors] = useState({})
 
   // selectedGoalIdから目標を取得
   const goalId = state.selectedGoalId
@@ -60,22 +65,33 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
     setSelectedGift(gift)
     setTitle(`${gift.title}: ${gift.benefit}`)
     setDescription(`🎁 特典：${gift.benefit}（${gift.description}）`)
+    setErrors({})
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    const newErrors = {}
+
     if (mode === 'select' && !selectedGift) {
-      alert('ギフトを選択してください')
-      return
+      newErrors.gift = 'ギフトを選択してください'
     }
     if (mode === 'custom' && !title.trim()) {
-      alert('リワード名を入力してください')
+      newErrors.title = 'リワード名を入力してください'
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
       return
     }
 
     if (!goalId) {
-      alert('目標が見つかりません。最初からやり直してください。')
-      setCurrentPage('goal-form-mode')
+      setToast({
+        message: '目標が見つかりません。最初からやり直してください。',
+        type: 'error',
+      })
+      setTimeout(() => {
+        setCurrentPage('goal-form-mode')
+      }, 2000)
       return
     }
 
@@ -88,13 +104,34 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
       },
     })
 
-    alert('目標とリワードが登録されました！')
-    setCurrentPage('home')
-
     // フォームをリセット
     setTitle('')
     setDescription('')
     setSelectedGift(null)
+    setErrors({})
+
+    // アナウンスページを表示
+    setShowAnnouncement(true)
+  }
+
+  if (showAnnouncement) {
+    return (
+      <Announcement
+        title="目標とリワードが登録されました！"
+        message="目標を達成すると、リワードを受け取ることができます。"
+        items={[
+          '目標を達成したら「目標を達成した！」ボタンを押してください',
+          'リワードコードが表示されます',
+          'コードを店員さんに見せてリワードを受け取れます',
+        ]}
+        buttonText="ホームに戻る"
+        onButtonClick={() => {
+          setShowAnnouncement(false)
+          setCurrentPage('home')
+        }}
+        icon="🎉"
+      />
+    )
   }
 
   if (!latestGoal) {
@@ -115,7 +152,7 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
 
   return (
     <div className="max-w-2xl mx-auto pb-20">
-      <div className="bg-white rounded-lg shadow-md p-8">
+      <div className="bg-white rounded-xl p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             リワードを設定
@@ -134,14 +171,19 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
                 ギフトを選択 <span className="text-red-500">*</span>
               </label>
               <div className="space-y-3">
+                {errors.gift && (
+                  <p className="text-sm text-red-600 mb-2">{errors.gift}</p>
+                )}
                 {GIFT_OPTIONS.map((gift) => (
                   <button
                     key={gift.id}
                     type="button"
                     onClick={() => handleGiftSelect(gift)}
-                    className={`w-full p-4 border-2 rounded-lg text-left transition-colors ${
+                    className={`w-full p-4 border-2 rounded-xl text-left transition-all duration-200 ${
                       selectedGift?.id === gift.id
                         ? 'border-secondary-500 bg-secondary-50'
+                        : errors.gift
+                        ? 'border-red-300 bg-red-50'
                         : 'border-gray-200 bg-white hover:border-secondary-300 hover:bg-secondary-50'
                     }`}
                   >
@@ -178,11 +220,19 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
                   type="text"
                   id="reward-title"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setTitle(e.target.value)
+                    setErrors({ ...errors, title: '' })
+                  }}
                   placeholder="例: 好きなレストランでディナー"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    errors.title ? 'border-red-300' : 'border-gray-300'
+                  }`}
                   required
                 />
+                {errors.title && (
+                  <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+                )}
               </div>
 
               <div>
@@ -228,6 +278,13 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
           </div>
         </form>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   )
 }

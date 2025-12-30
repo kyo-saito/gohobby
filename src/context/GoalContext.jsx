@@ -59,11 +59,47 @@ function goalReducer(state, action) {
         achievements: [...state.achievements, achievement],
       }
     case 'RECEIVE_REWARD':
+      // ランダムコードを生成（例: RWD-XXXX-XXXX形式）
+      const generateRewardCode = () => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        const randomChars = () => {
+          let result = ''
+          for (let i = 0; i < 4; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length))
+          }
+          return result
+        }
+        return `RWD-${randomChars()}-${randomChars()}`
+      }
+
       return {
         ...state,
         rewards: state.rewards.map((reward) =>
           reward.id === action.payload
-            ? { ...reward, received: true }
+            ? {
+                ...reward,
+                received: true,
+                rewardCode: reward.rewardCode || generateRewardCode(), // 既にコードがある場合は保持
+                receivedAt: reward.receivedAt || new Date().toISOString(),
+              }
+            : reward
+        ),
+      }
+    case 'UPDATE_GOAL':
+      return {
+        ...state,
+        goals: state.goals.map((goal) =>
+          goal.id === action.payload.id
+            ? { ...goal, ...action.payload.updates }
+            : goal
+        ),
+      }
+    case 'UPDATE_REWARD':
+      return {
+        ...state,
+        rewards: state.rewards.map((reward) =>
+          reward.id === action.payload.id
+            ? { ...reward, ...action.payload.updates }
             : reward
         ),
       }
