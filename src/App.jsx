@@ -18,6 +18,23 @@ function App() {
   const [goalFormMode, setGoalFormMode] = useState('detailed')
   const [rewardFormMode, setRewardFormMode] = useState('custom')
 
+  // 戻る機能（登録フロー内のみ）
+  const goBack = () => {
+    switch (currentPage) {
+      case 'goal-form':
+        setCurrentPage('goal-form-mode')
+        break
+      case 'reward-form-mode':
+        setCurrentPage('goal-form')
+        break
+      case 'reward-form':
+        setCurrentPage('reward-form-mode')
+        break
+      default:
+        setCurrentPage('home')
+    }
+  }
+
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
@@ -31,6 +48,7 @@ function App() {
           <GoalFormMode
             setCurrentPage={setCurrentPage}
             setMode={setGoalFormMode}
+            onBack={goBack}
           />
         )
       case 'goal-form':
@@ -38,6 +56,7 @@ function App() {
           <GoalForm
             setCurrentPage={setCurrentPage}
             mode={goalFormMode}
+            onBack={goBack}
           />
         )
       case 'reward-form-mode':
@@ -45,6 +64,7 @@ function App() {
           <RewardFormMode
             setCurrentPage={setCurrentPage}
             setMode={setRewardFormMode}
+            onBack={goBack}
           />
         )
       case 'reward-form':
@@ -52,6 +72,7 @@ function App() {
           <RewardForm
             setCurrentPage={setCurrentPage}
             mode={rewardFormMode}
+            onBack={goBack}
           />
         )
       case 'goal-detail':

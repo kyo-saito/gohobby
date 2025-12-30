@@ -16,7 +16,7 @@ const GOAL_TEMPLATES = [
   '健康診断を受ける',
 ]
 
-function GoalForm({ setCurrentPage, mode = 'detailed' }) {
+function GoalForm({ setCurrentPage, mode = 'detailed', onBack = null }) {
   const { dispatch } = useGoal()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -63,7 +63,13 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
   return (
     <div className="max-w-2xl mx-auto pb-20">
       <div className="bg-white rounded-xl p-8">
-        <StepIndicator currentStep={1} totalSteps={3} stepName="目標の入力" />
+        <StepIndicator 
+          currentStep={1} 
+          totalSteps={3} 
+          stepName="目標の入力" 
+          onBack={onBack}
+          showBack={false}
+        />
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           新しい目標を登録
         </h2>
@@ -153,7 +159,16 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
             </>
           )}
 
-          <div className="flex gap-4">
+          <div className="flex gap-3">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="px-4 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors text-sm"
+              >
+                ← 戻る
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setCurrentPage('home')}

@@ -42,7 +42,7 @@ const GIFT_OPTIONS = [
   },
 ]
 
-function RewardForm({ setCurrentPage, mode = 'custom' }) {
+function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
   const { state, dispatch } = useGoal()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -157,7 +157,13 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
   return (
     <div className="max-w-2xl mx-auto pb-20">
       <div className="bg-white rounded-xl p-8">
-        <StepIndicator currentStep={2} totalSteps={3} stepName="リワードの設定" />
+        <StepIndicator 
+          currentStep={2} 
+          totalSteps={3} 
+          stepName="リワードの設定" 
+          onBack={onBack}
+          showBack={true}
+        />
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             リワードを設定
@@ -266,13 +272,22 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
             </p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-3">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="px-4 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors text-sm"
+              >
+                ← 戻る
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setCurrentPage('home')}
               className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              スキップ
+              キャンセル
             </button>
             <button
               type="submit"

@@ -1,10 +1,16 @@
 import StepIndicator from '../components/StepIndicator'
 
-function GoalFormMode({ setCurrentPage, setMode }) {
+function GoalFormMode({ setCurrentPage, setMode, onBack = null }) {
   return (
     <div className="max-w-2xl mx-auto pb-20">
       <div className="bg-white rounded-xl p-8">
-        <StepIndicator currentStep={1} totalSteps={3} stepName="目標の入力" />
+        <StepIndicator 
+          currentStep={1} 
+          totalSteps={3} 
+          stepName="目標の入力" 
+          onBack={onBack}
+          showBack={false}
+        />
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           目標を登録
         </h2>
@@ -46,12 +52,22 @@ function GoalFormMode({ setCurrentPage, setMode }) {
           </button>
         </div>
 
-        <button
-          onClick={() => setCurrentPage('home')}
-          className="mt-6 w-full px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          キャンセル
-        </button>
+        <div className="flex gap-3 mt-6">
+          {onBack && (
+            <button
+              onClick={() => setCurrentPage('home')}
+              className="px-4 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors text-sm"
+            >
+              ← 戻る
+            </button>
+          )}
+          <button
+            onClick={() => setCurrentPage('home')}
+            className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            キャンセル
+          </button>
+        </div>
       </div>
     </div>
   )

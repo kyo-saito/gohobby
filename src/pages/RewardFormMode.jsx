@@ -41,7 +41,7 @@ const GIFT_OPTIONS = [
 
 import StepIndicator from '../components/StepIndicator'
 
-function RewardFormMode({ setCurrentPage, setMode }) {
+function RewardFormMode({ setCurrentPage, setMode, onBack = null }) {
   const { state } = useGoal()
   const goalId = state.selectedGoalId
   const latestGoal = state.goals.find((goal) => goal.id === goalId)
@@ -71,7 +71,13 @@ function RewardFormMode({ setCurrentPage, setMode }) {
   return (
     <div className="max-w-2xl mx-auto pb-20">
       <div className="bg-white rounded-xl p-8">
-        <StepIndicator currentStep={2} totalSteps={3} stepName="リワードの設定" />
+        <StepIndicator 
+          currentStep={2} 
+          totalSteps={3} 
+          stepName="リワードの設定" 
+          onBack={onBack}
+          showBack={true}
+        />
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             リワードを設定
@@ -121,12 +127,22 @@ function RewardFormMode({ setCurrentPage, setMode }) {
           </button>
         </div>
 
-        <button
-          onClick={() => setCurrentPage('home')}
-          className="mt-6 w-full px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          キャンセル
-        </button>
+        <div className="flex gap-3 mt-6">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="px-4 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors text-sm"
+            >
+              ← 戻る
+            </button>
+          )}
+          <button
+            onClick={() => setCurrentPage('home')}
+            className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            キャンセル
+          </button>
+        </div>
       </div>
     </div>
   )
