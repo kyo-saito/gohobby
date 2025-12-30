@@ -31,12 +31,22 @@ npm install
 # 開発サーバーの起動
 npm run dev
 
+# ファイル変更時に自動でバージョンを更新（別ターミナルで実行）
+npm run watch:version
+
 # ビルド
 npm run build
 
 # プレビュー
 npm run preview
 ```
+
+## バージョン管理
+
+- **自動バージョン更新**: ファイルを変更して保存すると、自動的にバージョンが更新されます
+  - `npm run watch:version` を別ターミナルで実行すると、ファイル変更を監視して自動更新
+  - Gitコミット時にも自動的にバージョンが更新されます（pre-commitフック）
+- **手動バージョン更新**: `npm run version:bump` で手動更新も可能
 
 ## 使用方法
 

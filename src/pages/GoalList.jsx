@@ -2,9 +2,23 @@ import { useGoal } from '../context/GoalContext'
 
 function GoalList({ setCurrentPage }) {
   const { state, dispatch } = useGoal()
-  const allGoals = [...state.goals].sort(
+  
+  // 進行中と達成済みに分類
+  const activeGoals = state.goals.filter((goal) => goal.status === 'active')
+  const completedGoals = state.goals.filter((goal) => goal.status === 'completed')
+  
+  // 進行中は新しい順、達成済みは達成日時順（達成日時がない場合は作成日時順）
+  const sortedActiveGoals = [...activeGoals].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   )
+  
+  const sortedCompletedGoals = [...completedGoals].sort((a, b) => {
+    const achievementA = state.achievements.find((ach) => ach.goalId === a.id)
+    const achievementB = state.achievements.find((ach) => ach.goalId === b.id)
+    const dateA = achievementA ? new Date(achievementA.completedAt) : new Date(a.createdAt)
+    const dateB = achievementB ? new Date(achievementB.completedAt) : new Date(b.createdAt)
+    return dateB - dateA
+  })
 
   const handleGoalClick = (goalId) => {
     dispatch({ type: 'SET_SELECTED_GOAL', payload: goalId })
@@ -22,73 +36,121 @@ function GoalList({ setCurrentPage }) {
         </p>
       </div>
 
-      {allGoals.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+      {sortedActiveGoals.length === 0 && sortedCompletedGoals.length === 0 ? (
+        <div className="bg-white rounded-xl p-8 text-center">
           <p className="text-gray-500 mb-4">まだ目標が登録されていません</p>
           <button
             onClick={() => setCurrentPage('goal-form-mode')}
-            className="bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+            className="bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
           >
             最初の目標を登録する
           </button>
         </div>
       ) : (
-        <div className="space-y-4">
-          {allGoals.map((goal) => {
-            const reward = state.rewards.find((r) => r.goalId === goal.id)
-            const achievement = state.achievements.find(
-              (a) => a.goalId === goal.id
-            )
-            return (
-              <div
-                key={goal.id}
-                onClick={() => handleGoalClick(goal.id)}
-                className={`bg-white rounded-xl p-5 cursor-pointer hover:shadow-md transition-all duration-200 border-l-4 ${
-                  goal.status === 'completed'
-                    ? 'border-secondary-400 opacity-90'
-                    : 'border-primary-500'
-                }`}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-800 flex-1">
-                    {goal.title}
-                  </h3>
-                  <span
-                    className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                      goal.status === 'completed'
-                        ? 'bg-secondary-50 text-secondary-600'
-                        : 'bg-primary-50 text-primary-600'
-                    }`}
-                  >
-                    {goal.status === 'completed' ? '✓ 達成済み' : '進行中'}
-                  </span>
-                </div>
-                {goal.description && (
-                  <p className="text-gray-600 text-sm mb-3">{goal.description}</p>
-                )}
-                {reward && (
-                  <div className="mt-3 pt-3 border-t border-gray-200">
-                    <p className="text-sm text-gray-500 mb-1">リワード:</p>
-                    <p className="text-secondary-600 font-medium">
-                      🎁 {reward.title}
-                    </p>
-                  </div>
-                )}
-                {achievement && (
-                  <p className="text-xs text-gray-400 mt-2">
-                    達成日:{' '}
-                    {new Date(achievement.completedAt).toLocaleDateString(
-                      'ja-JP'
-                    )}
-                  </p>
-                )}
-                <p className="text-xs text-gray-400 mt-2">
-                  登録日:{' '}
-                  {new Date(goal.createdAt).toLocaleDateString('ja-JP')}
-                </p>
+        <div className="space-y-8">
+          {/* 進行中の目標 */}
+          {sortedActiveGoals.length > 0 && (
+            <section>
+              <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                進行中 ({sortedActiveGoals.length})
+              </h3>
+              <div className="space-y-3">
+                {sortedActiveGoals.map((goal) => {
+                  const reward = state.rewards.find((r) => r.goalId === goal.id)
+                  return (
+                    <div
+                      key={goal.id}
+                      onClick={() => handleGoalClick(goal.id)}
+                      className="bg-white rounded-xl p-5 cursor-pointer hover:shadow-md transition-all duration-200 border-l-4 border-primary-500"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-lg font-semibold text-gray-800 flex-1">
+                          {goal.title}
+                        </h3>
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-50 text-primary-600">
+                          進行中
+                        </span>
+                      </div>
+                      {goal.description && (
+                        <p className="text-gray-600 text-sm mb-3">{goal.description}</p>
+                      )}
+                      {reward && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <p className="text-sm text-gray-500 mb-1">リワード:</p>
+                          <p className="text-secondary-600 font-medium">
+                            🎁 {reward.title}
+                          </p>
+                        </div>
+                      )}
+                      <p className="text-xs text-gray-400 mt-2">
+                        登録日:{' '}
+                        {new Date(goal.createdAt).toLocaleDateString('ja-JP')}
+                      </p>
+                    </div>
+                  )
+                })}
               </div>
-            )
-          })}
+            </section>
+          )}
+
+          {/* 達成済み目標 */}
+          {sortedCompletedGoals.length > 0 && (
+            <section>
+              <h3 className="text-xl font-semibold text-gray-500 mb-4">
+                達成済み ({sortedCompletedGoals.length})
+              </h3>
+              <div className="space-y-3">
+                {sortedCompletedGoals.map((goal) => {
+                  const reward = state.rewards.find((r) => r.goalId === goal.id)
+                  const achievement = state.achievements.find(
+                    (a) => a.goalId === goal.id
+                  )
+                  return (
+                    <div
+                      key={goal.id}
+                      onClick={() => handleGoalClick(goal.id)}
+                      className="bg-white rounded-xl p-5 cursor-pointer hover:shadow-sm transition-all duration-200 border-l-4 border-secondary-400 opacity-60"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-lg font-semibold text-gray-500 flex-1">
+                          {goal.title}
+                        </h3>
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-secondary-50 text-secondary-500">
+                          ✓ 達成済み
+                        </span>
+                      </div>
+                      {goal.description && (
+                        <p className="text-gray-400 text-sm mb-3">{goal.description}</p>
+                      )}
+                      {reward && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <p className="text-sm text-gray-400 mb-1">リワード:</p>
+                          <p className={`text-sm font-medium ${
+                            reward.received ? 'text-secondary-500' : 'text-gray-400'
+                          }`}>
+                            🎁 {reward.title}
+                            {reward.received && ' ✓ 受け取り済み'}
+                          </p>
+                        </div>
+                      )}
+                      {achievement && (
+                        <p className="text-xs text-gray-400 mt-2">
+                          達成日:{' '}
+                          {new Date(achievement.completedAt).toLocaleDateString(
+                            'ja-JP'
+                          )}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-400 mt-2">
+                        登録日:{' '}
+                        {new Date(goal.createdAt).toLocaleDateString('ja-JP')}
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
         </div>
       )}
     </div>

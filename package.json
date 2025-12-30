@@ -1,13 +1,15 @@
 {
   "name": "gohobby",
-  "version": "1.1.5",
+  "version": "1.1.12",
   "description": "目標達成とリワードシステムでストレス軽減を実現するアプリ",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "version:bump": "node scripts/bump-version.js"
+    "version:bump": "node scripts/bump-version.js",
+    "watch:version": "node scripts/watch-version.js",
+    "prepare": "node scripts/setup-git-hooks.js"
   },
   "dependencies": {
     "react": "^18.2.0",
