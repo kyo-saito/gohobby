@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGoal } from '../context/GoalContext'
 import Toast from '../components/Toast'
+import StepIndicator from '../components/StepIndicator'
 
 const GOAL_TEMPLATES = [
   '運動する',
@@ -62,6 +63,7 @@ function GoalForm({ setCurrentPage, mode = 'detailed' }) {
   return (
     <div className="max-w-2xl mx-auto pb-20">
       <div className="bg-white rounded-xl p-8">
+        <StepIndicator currentStep={1} totalSteps={3} stepName="目標の入力" />
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           新しい目標を登録
         </h2>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useGoal } from '../context/GoalContext'
 import Toast from '../components/Toast'
 import Announcement from './Announcement'
+import StepIndicator from '../components/StepIndicator'
 
 const GIFT_OPTIONS = [
   {
@@ -116,21 +117,24 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
 
   if (showAnnouncement) {
     return (
-      <Announcement
-        title="目標とリワードが登録されました！"
-        message="目標を達成すると、リワードを受け取ることができます。"
-        items={[
-          '目標を達成したら「目標を達成した！」ボタンを押してください',
-          'リワードコードが表示されます',
-          'コードを店員さんに見せてリワードを受け取れます',
-        ]}
-        buttonText="ホームに戻る"
-        onButtonClick={() => {
-          setShowAnnouncement(false)
-          setCurrentPage('home')
-        }}
-        icon="🎉"
-      />
+      <div className="max-w-2xl mx-auto pb-20">
+        <StepIndicator currentStep={3} totalSteps={3} stepName="完了" />
+        <Announcement
+          title="目標とリワードが登録されました！"
+          message="目標を達成すると、リワードを受け取ることができます。"
+          items={[
+            '目標を達成したら「目標を達成した！」ボタンを押してください',
+            'リワードコードが表示されます',
+            'コードを店員さんに見せてリワードを受け取れます',
+          ]}
+          buttonText="ホームに戻る"
+          onButtonClick={() => {
+            setShowAnnouncement(false)
+            setCurrentPage('home')
+          }}
+          icon="🎉"
+        />
+      </div>
     )
   }
 
@@ -153,6 +157,7 @@ function RewardForm({ setCurrentPage, mode = 'custom' }) {
   return (
     <div className="max-w-2xl mx-auto pb-20">
       <div className="bg-white rounded-xl p-8">
+        <StepIndicator currentStep={2} totalSteps={3} stepName="リワードの設定" />
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             リワードを設定

@@ -39,6 +39,8 @@ const GIFT_OPTIONS = [
   },
 ]
 
+import StepIndicator from '../components/StepIndicator'
+
 function RewardFormMode({ setCurrentPage, setMode }) {
   const { state } = useGoal()
   const goalId = state.selectedGoalId
@@ -68,7 +70,8 @@ function RewardFormMode({ setCurrentPage, setMode }) {
 
   return (
     <div className="max-w-2xl mx-auto pb-20">
-      <div className="bg-white rounded-lg shadow-md p-8">
+      <div className="bg-white rounded-xl p-8">
+        <StepIndicator currentStep={2} totalSteps={3} stepName="リワードの設定" />
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             リワードを設定

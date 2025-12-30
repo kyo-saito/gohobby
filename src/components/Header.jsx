@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function Header({ currentPage, setCurrentPage }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -14,6 +14,18 @@ function Header({ currentPage, setCurrentPage }) {
     setCurrentPage(pageId)
     setIsMenuOpen(false)
   }
+
+  // メニュー表示中は背景のスクロールを停止
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isMenuOpen])
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -64,26 +76,46 @@ function Header({ currentPage, setCurrentPage }) {
           </nav>
         </div>
 
-        {/* モバイル用ドロップダウンメニュー */}
+        {/* モバイル用オーバーレイメニュー */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-200">
-            <nav className="flex flex-col gap-2 mt-2">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => handleMenuClick(item.id)}
-                  className={`px-4 py-3 rounded-lg transition-colors flex items-center gap-3 text-left ${
-                    currentPage === item.id
-                      ? 'bg-primary-100 text-primary-700 font-semibold'
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
+          <>
+            {/* 背景オーバーレイ */}
+            <div
+              className="fixed inset-0 bg-black bg-opacity-40 z-50 md:hidden animate-fade-in"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            {/* メニュー本体（右上からドロップダウン） */}
+            <div className="fixed top-16 right-4 bg-white rounded-xl shadow-xl z-50 md:hidden min-w-[200px] animate-scale-in">
+              <div className="p-2">
+                <div className="flex items-center justify-between mb-2 px-2 py-1">
+                  <span className="text-sm font-semibold text-gray-700">メニュー</span>
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                    aria-label="閉じる"
+                  >
+                    <span className="text-xl">×</span>
+                  </button>
+                </div>
+                <nav className="flex flex-col gap-1">
+                  {menuItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => handleMenuClick(item.id)}
+                      className={`px-4 py-3 rounded-lg transition-colors flex items-center gap-3 text-left ${
+                        currentPage === item.id
+                          ? 'bg-primary-100 text-primary-700 font-semibold'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <span className="text-xl">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </header>
