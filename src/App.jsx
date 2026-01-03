@@ -11,6 +11,8 @@ import RewardFormMode from './pages/RewardFormMode'
 import RewardForm from './pages/RewardForm'
 import GoalDetail from './pages/GoalDetail'
 import GoalEdit from './pages/GoalEdit'
+import RewardReceiveConfirm from './pages/RewardReceiveConfirm'
+import RewardReceiveSuccess from './pages/RewardReceiveSuccess'
 import { GoalProvider } from './context/GoalContext'
 
 function App() {
@@ -79,6 +81,10 @@ function App() {
         return <GoalDetail setCurrentPage={setCurrentPage} />
       case 'goal-edit':
         return <GoalEdit setCurrentPage={setCurrentPage} />
+      case 'reward-receive-confirm':
+        return <RewardReceiveConfirm setCurrentPage={setCurrentPage} />
+      case 'reward-receive-success':
+        return <RewardReceiveSuccess setCurrentPage={setCurrentPage} />
       default:
         return <Home setCurrentPage={setCurrentPage} />
     }

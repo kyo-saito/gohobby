@@ -1,43 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGoal } from '../context/GoalContext'
 
-const GIFT_OPTIONS = [
-  {
-    id: 'ice-cream',
-    title: 'アイス',
-    benefit: 'トッピング無料',
-    description: '通常よりお得',
-    icon: '🍦',
-  },
-  {
-    id: 'manga',
-    title: '漫画',
-    benefit: '1巻無料',
-    description: '通常よりお得',
-    icon: '📚',
-  },
-  {
-    id: 'ramen',
-    title: 'ラーメン',
-    benefit: 'トッピング無料',
-    description: '通常よりお得',
-    icon: '🍜',
-  },
-  {
-    id: 'cafe',
-    title: 'カフェ',
-    benefit: 'サイズアップ無料',
-    description: '通常よりお得',
-    icon: '☕',
-  },
-  {
-    id: 'movie',
-    title: '映画',
-    benefit: 'ポップコーン無料',
-    description: '通常よりお得',
-    icon: '🎬',
-  },
-]
+// 選択式ご褒美のリストはRewardForm.jsxで定義
 
 import StepIndicator from '../components/StepIndicator'
 
@@ -74,13 +38,13 @@ function RewardFormMode({ setCurrentPage, setMode, onBack = null }) {
         <StepIndicator 
           currentStep={2} 
           totalSteps={3} 
-          stepName="リワードの設定" 
+          stepName="ご褒美の設定" 
           onBack={onBack}
           showBack={true}
         />
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            リワードを設定
+            ご褒美を設定
           </h2>
           <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
             <p className="text-sm text-primary-700 font-medium mb-1">
@@ -90,7 +54,7 @@ function RewardFormMode({ setCurrentPage, setMode, onBack = null }) {
         </div>
 
         <p className="text-gray-600 mb-6">
-          リワードの設定方法を選択してください
+          ご褒美の設定方法を選択してください
         </p>
 
         <div className="space-y-4">
@@ -102,9 +66,9 @@ function RewardFormMode({ setCurrentPage, setMode, onBack = null }) {
             className="w-full bg-secondary-500 hover:bg-secondary-600 text-white font-semibold px-6 py-4 rounded-lg transition-colors text-left flex items-center justify-between"
           >
             <div>
-              <div className="text-lg font-bold mb-1">選択式（デモ用）</div>
+              <div className="text-lg font-bold mb-1">選択式</div>
               <div className="text-sm opacity-90">
-                ギフト5つから選んで素早く設定
+                あらかじめ用意されたご褒美から選びます
               </div>
             </div>
             <span className="text-2xl">🎁</span>

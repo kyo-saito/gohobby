@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useGoal } from '../context/GoalContext'
-import RewardCodeModal from '../components/RewardCodeModal'
 import ConfirmModal from '../components/ConfirmModal'
 import Toast from '../components/Toast'
 
@@ -9,7 +8,6 @@ function GoalDetail({ setCurrentPage }) {
   const selectedGoalId = state.selectedGoalId
   const [showCodeModal, setShowCodeModal] = useState(false)
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false)
-  const [showReceiveConfirm, setShowReceiveConfirm] = useState(false)
   const [toast, setToast] = useState(null)
 
   const goal = state.goals.find((g) => g.id === selectedGoalId)
@@ -29,17 +27,8 @@ function GoalDetail({ setCurrentPage }) {
   }
 
   const handleReceiveReward = () => {
-    if (!reward || reward.received) return
-    setShowReceiveConfirm(true)
-  }
-
-  const confirmReceiveReward = () => {
-    dispatch({ type: 'RECEIVE_REWARD', payload: reward.id })
-    setShowReceiveConfirm(false)
-    // コードを表示
-    setTimeout(() => {
-      setShowCodeModal(true)
-    }, 100)
+    if (!selectedGoalId || goal.rewarded) return
+    setCurrentPage('reward-receive-confirm')
   }
 
   if (!goal) {
@@ -88,7 +77,7 @@ function GoalDetail({ setCurrentPage }) {
         {reward && (
           <div className="mb-6 bg-gradient-to-r from-secondary-50 to-primary-50 rounded-xl p-5 border border-secondary-200">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              🎁 リワード
+              🎁 ご褒美
             </h3>
             <p className="text-xl font-bold text-secondary-700 mb-2">
               {reward.title}
@@ -96,32 +85,26 @@ function GoalDetail({ setCurrentPage }) {
             {reward.description && (
               <p className="text-gray-600 text-sm mb-4">{reward.description}</p>
             )}
-            {isCompleted && !reward.received && (
+            {isCompleted && !goal.rewarded && (
               <button
                 onClick={handleReceiveReward}
                 className="mt-4 px-6 py-3 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl transition-all duration-200 w-full shadow-sm hover:shadow-md"
               >
-                リワードを受け取る 🎉
+                ご褒美を受け取る 🎉
               </button>
             )}
-            {reward.received && (
+            {goal.rewarded && (
               <div className="mt-4 space-y-3">
                 <div className="px-4 py-2.5 bg-secondary-50 rounded-xl border border-secondary-200">
                   <p className="text-secondary-700 font-semibold mb-2 text-sm">
-                    ✓ 受け取り済み
+                    ✓ ご褒美をあげました
                   </p>
-                  {reward.rewardCode && (
+                  {goal.rewardedAt && (
                     <p className="text-xs text-gray-600 mb-2">
-                      コード: <span className="font-mono font-bold">{reward.rewardCode}</span>
+                      ご褒美日: {new Date(goal.rewardedAt).toLocaleDateString('ja-JP')}
                     </p>
                   )}
                 </div>
-                <button
-                  onClick={() => setShowCodeModal(true)}
-                  className="w-full px-6 py-3 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
-                >
-                  コードを見る
-                </button>
               </div>
             )}
           </div>
@@ -155,12 +138,6 @@ function GoalDetail({ setCurrentPage }) {
           )}
         </div>
       </div>
-      {showCodeModal && reward && (
-        <RewardCodeModal
-          reward={reward}
-          onClose={() => setShowCodeModal(false)}
-        />
-      )}
       {showCompleteConfirm && (
         <ConfirmModal
           title="目標を達成しましたか？"
@@ -169,17 +146,6 @@ function GoalDetail({ setCurrentPage }) {
           onCancel={() => setShowCompleteConfirm(false)}
           confirmText="達成した"
           cancelText="キャンセル"
-        />
-      )}
-      {showReceiveConfirm && reward && (
-        <ConfirmModal
-          title="リワードを受け取りますか？"
-          message={`${reward.title}を受け取りますか？`}
-          onConfirm={confirmReceiveReward}
-          onCancel={() => setShowReceiveConfirm(false)}
-          confirmText="受け取る"
-          cancelText="キャンセル"
-          confirmColor="secondary"
         />
       )}
       {toast && (

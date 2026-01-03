@@ -4,41 +4,47 @@ import Toast from '../components/Toast'
 import Announcement from './Announcement'
 import StepIndicator from '../components/StepIndicator'
 
+// 選択式ご褒美のリスト（具体的な行動ベース）
 const GIFT_OPTIONS = [
   {
     id: 'ice-cream',
-    title: 'アイス',
-    benefit: 'トッピング無料',
-    description: '通常よりお得',
+    title: '仕事帰りにコンビニでアイスを食べる',
     icon: '🍦',
   },
   {
-    id: 'manga',
-    title: '漫画',
-    benefit: '1巻無料',
-    description: '通常よりお得',
-    icon: '📚',
-  },
-  {
     id: 'ramen',
-    title: 'ラーメン',
-    benefit: 'トッピング無料',
-    description: '通常よりお得',
+    title: '好きなラーメン屋で一杯食べる',
     icon: '🍜',
   },
   {
     id: 'cafe',
-    title: 'カフェ',
-    benefit: 'サイズアップ無料',
-    description: '通常よりお得',
+    title: 'カフェでゆっくりコーヒーを飲む',
     icon: '☕',
   },
   {
+    id: 'manga',
+    title: '気になっていた漫画を1冊読む',
+    icon: '📚',
+  },
+  {
     id: 'movie',
-    title: '映画',
-    benefit: 'ポップコーン無料',
-    description: '通常よりお得',
+    title: '家で映画を1本観る',
     icon: '🎬',
+  },
+  {
+    id: 'walk',
+    title: '好きな音楽を聴きながら散歩する',
+    icon: '🚶',
+  },
+  {
+    id: 'shopping',
+    title: 'お気に入りのお店で買い物をする',
+    icon: '🛍️',
+  },
+  {
+    id: 'bath',
+    title: '温泉やお風呂でゆっくりする',
+    icon: '♨️',
   },
 ]
 
@@ -64,8 +70,8 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
 
   const handleGiftSelect = (gift) => {
     setSelectedGift(gift)
-    setTitle(`${gift.title}: ${gift.benefit}`)
-    setDescription(`🎁 特典：${gift.benefit}（${gift.description}）`)
+    setTitle(gift.title)
+    setDescription('')
     setErrors({})
   }
 
@@ -77,7 +83,7 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
       newErrors.gift = 'ギフトを選択してください'
     }
     if (mode === 'custom' && !title.trim()) {
-      newErrors.title = 'リワード名を入力してください'
+      newErrors.title = 'ご褒美名を入力してください'
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -120,12 +126,11 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
       <div className="max-w-2xl mx-auto pb-20">
         <StepIndicator currentStep={3} totalSteps={3} stepName="完了" />
         <Announcement
-          title="目標とリワードが登録されました！"
-          message="目標を達成すると、リワードを受け取ることができます。"
+          title="目標とご褒美が登録されました！"
+          message="目標を達成すると、ご褒美をあげることができます。"
           items={[
             '目標を達成したら「目標を達成した！」ボタンを押してください',
-            'リワードコードが表示されます',
-            'コードを店員さんに見せてリワードを受け取れます',
+            '「ご褒美をあげる」ボタンからご褒美をあげることができます',
           ]}
           buttonText="ホームに戻る"
           onButtonClick={() => {
@@ -160,13 +165,13 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
         <StepIndicator 
           currentStep={2} 
           totalSteps={3} 
-          stepName="リワードの設定" 
+          stepName="ご褒美の設定" 
           onBack={onBack}
           showBack={true}
         />
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            リワードを設定
+            ご褒美を設定
           </h2>
           <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
             <p className="text-sm text-primary-700 font-medium mb-1">
@@ -205,9 +210,6 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
                           <div className="font-semibold text-gray-800">
                             {gift.title}
                           </div>
-                          <div className="text-sm text-secondary-600 font-medium">
-                            🎁 特典：{gift.benefit}（{gift.description}）
-                          </div>
                         </div>
                       </div>
                       {selectedGift?.id === gift.id && (
@@ -225,7 +227,7 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
                   htmlFor="reward-title"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  リワード名 <span className="text-red-500">*</span>
+                  ご褒美名 <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -257,7 +259,7 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
                   id="reward-description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="リワードの詳細を記入してください"
+                  placeholder="ご褒美の詳細を記入してください"
                   rows="4"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
@@ -267,7 +269,7 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
 
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-600">
-              💡 目標を達成したら、このリワードを受け取ることができます。
+              💡 目標を達成したら、このご褒美をあげることができます。
               自分へのご褒美を楽しみに、目標達成に向けて頑張りましょう！
             </p>
           </div>
@@ -293,7 +295,7 @@ function RewardForm({ setCurrentPage, mode = 'custom', onBack = null }) {
               type="submit"
               className="flex-1 px-6 py-3 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-lg transition-colors"
             >
-              リワードを登録
+              ご褒美を登録
             </button>
           </div>
         </form>

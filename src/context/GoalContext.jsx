@@ -26,6 +26,7 @@ function goalReducer(state, action) {
         id: Date.now().toString(),
         createdAt: new Date().toISOString(),
         status: 'active',
+        rewarded: false, // ご褒美をあげたかどうか
       }
       return {
         ...state,
@@ -83,6 +84,16 @@ function goalReducer(state, action) {
                 receivedAt: reward.receivedAt || new Date().toISOString(),
               }
             : reward
+        ),
+      }
+    case 'GIVE_REWARD':
+      // ご褒美をあげる（目標にrewardedフラグを設定）
+      return {
+        ...state,
+        goals: state.goals.map((goal) =>
+          goal.id === action.payload
+            ? { ...goal, rewarded: true, rewardedAt: new Date().toISOString() }
+            : goal
         ),
       }
     case 'UPDATE_GOAL':

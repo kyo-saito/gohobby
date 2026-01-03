@@ -7,7 +7,7 @@ function Header({ currentPage, setCurrentPage }) {
   const menuItems = [
     { id: 'home', label: 'ホーム', icon: '🏠' },
     { id: 'goals', label: '目標', icon: '🎯' },
-    { id: 'rewards', label: 'リワード', icon: '🎁' },
+    { id: 'rewards', label: 'ご褒美', icon: '🎁' },
   ]
 
   const handleMenuClick = (pageId) => {
