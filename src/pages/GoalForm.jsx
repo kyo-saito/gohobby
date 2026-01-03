@@ -51,7 +51,7 @@ function GoalForm({ setCurrentPage, mode = 'detailed', onBack = null }) {
       },
     })
 
-    // リワード登録画面に遷移
+    // ご褒美登録画面に遷移
     setCurrentPage('reward-form-mode')
 
     // フォームをリセット
@@ -180,7 +180,7 @@ function GoalForm({ setCurrentPage, mode = 'detailed', onBack = null }) {
               type="submit"
               className="flex-1 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors"
             >
-              次へ（リワードを設定）
+              次へ（ご褒美を設定）
             </button>
           </div>
         </form>

@@ -74,7 +74,7 @@ function GoalDetail({ setCurrentPage }) {
           </div>
         </div>
 
-        {reward && (
+        {reward ? (
           <div className="mb-6 bg-gradient-to-r from-secondary-50 to-primary-50 rounded-xl p-5 border border-secondary-200">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
               🎁 ご褒美
@@ -108,6 +108,27 @@ function GoalDetail({ setCurrentPage }) {
               </div>
             )}
           </div>
+        ) : (
+          <div className="mb-6 bg-yellow-50 rounded-xl p-5 border border-yellow-200">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-yellow-600">⚠️</span>
+              <h3 className="text-lg font-semibold text-yellow-800">
+                ご褒美未設定
+              </h3>
+            </div>
+            <p className="text-sm text-yellow-700 mb-4">
+              この目標にはまだご褒美が設定されていません。ご褒美を設定すると、目標達成時にご褒美をあげることができます。
+            </p>
+            <button
+              onClick={() => {
+                dispatch({ type: 'SET_SELECTED_GOAL', payload: selectedGoalId })
+                setCurrentPage('reward-form-mode')
+              }}
+              className="w-full px-6 py-3 bg-secondary-500 hover:bg-secondary-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              ご褒美を設定する 🎁
+            </button>
+          </div>
         )}
 
         {achievement && (
@@ -131,7 +152,13 @@ function GoalDetail({ setCurrentPage }) {
           {!isCompleted && (
             <button
               onClick={handleCompleteGoal}
-              className="flex-1 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors"
+              disabled={!reward}
+              className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-colors ${
+                reward
+                  ? 'bg-primary-500 hover:bg-primary-600 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              title={!reward ? '先にご褒美を設定してください' : ''}
             >
               目標を達成した！
             </button>
@@ -141,10 +168,10 @@ function GoalDetail({ setCurrentPage }) {
       {showCompleteConfirm && (
         <ConfirmModal
           title="目標を達成しましたか？"
-          message="達成すると、リワードを受け取ることができます。"
-          onConfirm={confirmCompleteGoal}
+          message={reward ? "達成すると、ご褒美をあげることができます。" : "先にご褒美を設定してください。"}
+          onConfirm={reward ? confirmCompleteGoal : () => setShowCompleteConfirm(false)}
           onCancel={() => setShowCompleteConfirm(false)}
-          confirmText="達成した"
+          confirmText={reward ? "達成した" : "OK"}
           cancelText="キャンセル"
         />
       )}

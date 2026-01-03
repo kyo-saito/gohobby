@@ -74,11 +74,17 @@ function GoalList({ setCurrentPage }) {
                       {goal.description && (
                         <p className="text-gray-600 text-sm mb-3">{goal.description}</p>
                       )}
-                      {reward && (
+                      {reward ? (
                         <div className="mt-3 pt-3 border-t border-gray-200">
-                          <p className="text-sm text-gray-500 mb-1">リワード:</p>
+                          <p className="text-sm text-gray-500 mb-1">ご褒美:</p>
                           <p className="text-secondary-600 font-medium">
                             🎁 {reward.title}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="mt-3 pt-3 border-t border-yellow-200 bg-yellow-50 rounded-lg p-2">
+                          <p className="text-sm text-yellow-700 font-medium flex items-center gap-1">
+                            ⚠️ ご褒美未設定
                           </p>
                         </div>
                       )}
@@ -124,7 +130,7 @@ function GoalList({ setCurrentPage }) {
                       )}
                       {reward && (
                         <div className="mt-3 pt-3 border-t border-gray-200">
-                          <p className="text-sm text-gray-400 mb-1">リワード:</p>
+                          <p className="text-sm text-gray-400 mb-1">ご褒美:</p>
                           <p className={`text-sm font-medium ${
                             reward.received ? 'text-secondary-500' : 'text-gray-400'
                           }`}>

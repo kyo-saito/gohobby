@@ -15,7 +15,7 @@ function RewardReceiveConfirm({ setCurrentPage }) {
 
   const handleConfirm = () => {
     if (!goalId) {
-      setCurrentPage('reward-list')
+      setCurrentPage('rewards')
       return
     }
     dispatch({ type: 'GIVE_REWARD', payload: goalId })

@@ -62,15 +62,26 @@ function Home({ setCurrentPage }) {
                           {goal.description}
                         </p>
                       )}
-                      {reward && (
+                      {reward ? (
                         <p className="text-sm text-secondary-600 font-medium">
                           🎁 {reward.title}
                         </p>
+                      ) : (
+                        <p className="text-sm text-yellow-600 font-medium flex items-center gap-1">
+                          ⚠️ ご褒美未設定
+                        </p>
                       )}
                     </div>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full ml-2 bg-primary-50 text-primary-600">
-                      進行中
-                    </span>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-50 text-primary-600">
+                        進行中
+                      </span>
+                      {!reward && (
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700">
+                          ご褒美未設定
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               )
