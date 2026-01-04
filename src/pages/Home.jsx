@@ -2,8 +2,9 @@ import { useGoal } from '../context/GoalContext'
 
 function Home({ setCurrentPage }) {
   const { state, dispatch } = useGoal()
-  const activeGoals = state.goals.filter((goal) => goal.status === 'active')
-  const completedGoals = state.goals.filter((goal) => goal.status === 'completed')
+  // goalが存在し、有効なもののみフィルタリング
+  const activeGoals = state.goals.filter((goal) => goal && goal.id && goal.status === 'active')
+  const completedGoals = state.goals.filter((goal) => goal && goal.id && goal.status === 'completed')
 
   const handleGoalClick = (goalId) => {
     dispatch({ type: 'SET_SELECTED_GOAL', payload: goalId })
@@ -45,7 +46,10 @@ function Home({ setCurrentPage }) {
           </h3>
           <div className="space-y-3">
             {sortedActiveGoals.map((goal) => {
-              const reward = state.rewards.find((r) => r.goalId === goal.id)
+              // goalが存在しない場合はスキップ
+              if (!goal || !goal.id) return null
+              
+              const reward = state.rewards.find((r) => r && r.goalId === goal.id)
               return (
                 <div
                   key={goal.id}
@@ -55,14 +59,14 @@ function Home({ setCurrentPage }) {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h4 className="text-lg font-semibold text-gray-800 mb-1">
-                        {goal.title}
+                        {goal.title || '無題の目標'}
                       </h4>
                       {goal.description && (
                         <p className="text-gray-600 text-sm mb-2 line-clamp-2">
                           {goal.description}
                         </p>
                       )}
-                      {reward ? (
+                      {reward && reward.title ? (
                         <p className="text-sm text-secondary-600 font-medium">
                           🎁 {reward.title}
                         </p>

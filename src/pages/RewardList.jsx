@@ -14,23 +14,23 @@ function RewardList({ setCurrentPage }) {
     setCurrentPage('reward-receive-confirm')
   }
 
-  // 達成済みでまだご褒美をあげていない目標
+  // 達成済みでまだご褒美をあげていない目標（goalが存在し、有効なもののみ）
   const unreceivedGoals = state.goals
-    .filter((goal) => goal.status === 'completed' && !goal.rewarded)
+    .filter((goal) => goal && goal.status === 'completed' && !goal.rewarded)
     .sort((a, b) => {
       const achievementA = state.achievements.find((ach) => ach.goalId === a.id)
       const achievementB = state.achievements.find((ach) => ach.goalId === b.id)
-      const dateA = achievementA ? new Date(achievementA.completedAt) : new Date(a.createdAt)
-      const dateB = achievementB ? new Date(achievementB.completedAt) : new Date(b.createdAt)
+      const dateA = achievementA ? new Date(achievementA.completedAt) : new Date(a.createdAt || 0)
+      const dateB = achievementB ? new Date(achievementB.completedAt) : new Date(b.createdAt || 0)
       return dateB - dateA // 新しい順
     })
 
-  // ご褒美を受け取った目標
+  // ご褒美を受け取った目標（goalが存在し、有効なもののみ）
   const receivedGoals = state.goals
-    .filter((goal) => goal.rewarded)
+    .filter((goal) => goal && goal.rewarded)
     .sort((a, b) => {
-      const dateA = goal.rewardedAt ? new Date(goal.rewardedAt) : new Date(goal.createdAt)
-      const dateB = goal.rewardedAt ? new Date(goal.rewardedAt) : new Date(goal.createdAt)
+      const dateA = a.rewardedAt ? new Date(a.rewardedAt) : new Date(a.createdAt || 0)
+      const dateB = b.rewardedAt ? new Date(b.rewardedAt) : new Date(b.createdAt || 0)
       return dateB - dateA // 新しい順
     })
 
@@ -66,11 +66,14 @@ function RewardList({ setCurrentPage }) {
               </h3>
               <div className="space-y-3">
                 {unreceivedGoals.map((goal) => {
+                  // goalが存在しない場合はスキップ
+                  if (!goal || !goal.id) return null
+                  
                   const reward = state.rewards.find(
-                    (r) => r.goalId === goal.id
+                    (r) => r && r.goalId === goal.id
                   )
                   const achievement = state.achievements.find(
-                    (a) => a.goalId === goal.id
+                    (a) => a && a.goalId === goal.id
                   )
                   return (
                     <div
@@ -82,7 +85,7 @@ function RewardList({ setCurrentPage }) {
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-2xl">🎁</span>
                             <h4 className="text-lg font-bold text-primary-700">
-                              {reward ? reward.title : goal.title}
+                              {reward && reward.title ? reward.title : (goal.title || '無題の目標')}
                             </h4>
                             <span className="bg-primary-200 text-primary-800 text-xs font-semibold px-2 py-1 rounded">
                               受け取り待ち
@@ -93,12 +96,12 @@ function RewardList({ setCurrentPage }) {
                               {reward.description}
                             </p>
                           )}
-                          {goal && (
+                          {goal.title && (
                             <p className="text-sm text-gray-600">
                               目標: {goal.title}
                             </p>
                           )}
-                          {achievement && (
+                          {achievement && achievement.completedAt && (
                             <p className="text-xs text-gray-500 mt-2">
                               達成日: {new Date(achievement.completedAt).toLocaleDateString('ja-JP')}
                             </p>
@@ -127,11 +130,14 @@ function RewardList({ setCurrentPage }) {
               </h3>
               <div className="space-y-3">
                 {receivedGoals.map((goal) => {
+                  // goalが存在しない場合はスキップ
+                  if (!goal || !goal.id) return null
+                  
                   const reward = state.rewards.find(
-                    (r) => r.goalId === goal.id
+                    (r) => r && r.goalId === goal.id
                   )
                   const achievement = state.achievements.find(
-                    (a) => a.goalId === goal.id
+                    (a) => a && a.goalId === goal.id
                   )
                   return (
                     <div
@@ -143,7 +149,7 @@ function RewardList({ setCurrentPage }) {
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-2xl">🎁</span>
                             <h4 className="text-lg font-bold text-secondary-700">
-                              {reward ? reward.title : goal.title}
+                              {reward && reward.title ? reward.title : (goal.title || '無題の目標')}
                             </h4>
                             <span className="bg-secondary-200 text-secondary-800 text-xs font-semibold px-2 py-1 rounded">
                               受け取り済み
@@ -154,12 +160,12 @@ function RewardList({ setCurrentPage }) {
                               {reward.description}
                             </p>
                           )}
-                          {goal && (
+                          {goal.title && (
                             <p className="text-sm text-gray-600">
                               目標: {goal.title}
                             </p>
                           )}
-                          {achievement && (
+                          {achievement && achievement.completedAt && (
                             <p className="text-xs text-gray-500 mt-2">
                               達成日: {new Date(achievement.completedAt).toLocaleDateString('ja-JP')}
                             </p>

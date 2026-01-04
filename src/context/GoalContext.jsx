@@ -14,11 +14,23 @@ const initialState = {
 function goalReducer(state, action) {
   switch (action.type) {
     case 'LOAD_DATA':
+      // データ読み込み時に、存在しないgoalIdのreward/achievementを自動クリーンアップ
+      const goals = action.payload.goals || []
+      const goalIds = new Set(goals.map(g => g?.id).filter(Boolean))
+      
+      const validRewards = (action.payload.rewards || []).filter(
+        (r) => r && r.goalId && goalIds.has(r.goalId)
+      )
+      
+      const validAchievements = (action.payload.achievements || []).filter(
+        (a) => a && a.goalId && goalIds.has(a.goalId)
+      )
+      
       return {
         ...state,
-        goals: action.payload.goals || [],
-        rewards: action.payload.rewards || [],
-        achievements: action.payload.achievements || [],
+        goals: goals.filter(g => g && g.id), // 無効なgoalも除外
+        rewards: validRewards,
+        achievements: validAchievements,
       }
     case 'ADD_GOAL':
       const newGoal = {
