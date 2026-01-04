@@ -8,6 +8,7 @@ function GoalDetail({ setCurrentPage }) {
   const selectedGoalId = state.selectedGoalId
   const [showCodeModal, setShowCodeModal] = useState(false)
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [toast, setToast] = useState(null)
 
   const goal = state.goals.find((g) => g.id === selectedGoalId)
@@ -29,6 +30,21 @@ function GoalDetail({ setCurrentPage }) {
   const handleReceiveReward = () => {
     if (!selectedGoalId || goal.rewarded) return
     setCurrentPage('reward-receive-confirm')
+  }
+
+  const handleDeleteGoal = () => {
+    if (!selectedGoalId) return
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDeleteGoal = () => {
+    if (!selectedGoalId) return
+    dispatch({ type: 'DELETE_GOAL', payload: selectedGoalId })
+    setShowDeleteConfirm(false)
+    setToast({ message: '目標を削除しました', type: 'success' })
+    setTimeout(() => {
+      setCurrentPage('home')
+    }, 1000)
   }
 
   if (!goal) {
@@ -142,27 +158,36 @@ function GoalDetail({ setCurrentPage }) {
           </div>
         )}
 
-        <div className="mt-6 flex gap-4">
-          <button
-            onClick={() => setCurrentPage('goal-edit')}
-            className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            編集
-          </button>
-          {!isCompleted && (
+        <div className="mt-6 space-y-3">
+          <div className="flex gap-4">
             <button
-              onClick={handleCompleteGoal}
-              disabled={!reward}
-              className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-colors ${
-                reward
-                  ? 'bg-primary-500 hover:bg-primary-600 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-              title={!reward ? '先にご褒美を設定してください' : ''}
+              onClick={() => setCurrentPage('goal-edit')}
+              className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              目標を達成した！
+              編集
             </button>
-          )}
+            {!isCompleted && (
+              <button
+                onClick={handleCompleteGoal}
+                disabled={!reward}
+                className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-colors ${
+                  reward
+                    ? 'bg-primary-500 hover:bg-primary-600 text-white'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+                title={!reward ? '先にご褒美を設定してください' : ''}
+              >
+                目標を達成した！
+              </button>
+            )}
+          </div>
+          <button
+            onClick={handleDeleteGoal}
+            className="w-full px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <span>🗑️</span>
+            目標を削除
+          </button>
         </div>
       </div>
       {showCompleteConfirm && (
@@ -173,6 +198,17 @@ function GoalDetail({ setCurrentPage }) {
           onCancel={() => setShowCompleteConfirm(false)}
           confirmText={reward ? "達成した" : "OK"}
           cancelText="キャンセル"
+        />
+      )}
+      {showDeleteConfirm && (
+        <ConfirmModal
+          title="目標を削除しますか？"
+          message="この操作は元に戻せません。目標と関連するご褒美、達成記録がすべて削除されます。"
+          onConfirm={confirmDeleteGoal}
+          onCancel={() => setShowDeleteConfirm(false)}
+          confirmText="削除する"
+          cancelText="キャンセル"
+          confirmColor="danger"
         />
       )}
       {toast && (

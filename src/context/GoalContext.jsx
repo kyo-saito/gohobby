@@ -114,6 +114,15 @@ function goalReducer(state, action) {
             : reward
         ),
       }
+    case 'DELETE_GOAL':
+      // 目標を削除（関連するご褒美と達成記録も削除）
+      return {
+        ...state,
+        goals: state.goals.filter((goal) => goal.id !== action.payload),
+        rewards: state.rewards.filter((reward) => reward.goalId !== action.payload),
+        achievements: state.achievements.filter((achievement) => achievement.goalId !== action.payload),
+        selectedGoalId: state.selectedGoalId === action.payload ? null : state.selectedGoalId,
+      }
     case 'SET_SELECTED_GOAL':
       return {
         ...state,

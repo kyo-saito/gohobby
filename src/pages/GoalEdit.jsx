@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGoal } from '../context/GoalContext'
 import Toast from '../components/Toast'
+import ConfirmModal from '../components/ConfirmModal'
 import { REWARD_PRESETS } from '../constants/rewardPresets'
 
 const GOAL_TEMPLATES = [
@@ -33,6 +34,7 @@ function GoalEdit({ setCurrentPage }) {
   const [selectedRewardPreset, setSelectedRewardPreset] = useState(null)
   const [toast, setToast] = useState(null)
   const [titleError, setTitleError] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   // 初期化：既存のご褒美がテンプレートに一致するかチェック
   useEffect(() => {
@@ -118,6 +120,21 @@ function GoalEdit({ setCurrentPage }) {
     setTimeout(() => {
       setCurrentPage('goal-detail')
     }, 1500)
+  }
+
+  const handleDeleteGoal = () => {
+    if (!goal) return
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDeleteGoal = () => {
+    if (!goal) return
+    dispatch({ type: 'DELETE_GOAL', payload: goal.id })
+    setShowDeleteConfirm(false)
+    setToast({ message: '目標を削除しました', type: 'success' })
+    setTimeout(() => {
+      setCurrentPage('home')
+    }, 1000)
   }
 
   if (!goal) {
@@ -398,19 +415,29 @@ function GoalEdit({ setCurrentPage }) {
             )}
           </div>
 
-          <div className="flex gap-4">
+          <div className="space-y-3">
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => setCurrentPage('goal-detail')}
+                className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                キャンセル
+              </button>
+              <button
+                type="submit"
+                className="flex-1 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors"
+              >
+                保存
+              </button>
+            </div>
             <button
               type="button"
-              onClick={() => setCurrentPage('goal-detail')}
-              className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              onClick={handleDeleteGoal}
+              className="w-full px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-lg transition-colors"
-            >
-              保存
+              <span>🗑️</span>
+              目標を削除
             </button>
           </div>
           {!reward && rewardMode === null && (
@@ -422,6 +449,17 @@ function GoalEdit({ setCurrentPage }) {
           )}
         </form>
       </div>
+      {showDeleteConfirm && (
+        <ConfirmModal
+          title="目標を削除しますか？"
+          message="この操作は元に戻せません。目標と関連するご褒美、達成記録がすべて削除されます。"
+          onConfirm={confirmDeleteGoal}
+          onCancel={() => setShowDeleteConfirm(false)}
+          confirmText="削除する"
+          cancelText="キャンセル"
+          confirmColor="danger"
+        />
+      )}
       {toast && (
         <Toast
           message={toast.message}
